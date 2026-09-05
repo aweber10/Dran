@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dran — Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#ffffff;
+  --surface:#e9ece5;
+  --surface-deep:#dfe3d9;
+  --ink:#242a20;
+  --ink-soft:#69705f;
+  --ink-faint:#9aa08e;
+  --rule:#d3d8c9;
+  --accent:#2f6f5e;
+  --accent-ink:#ffffff;
+  --danger:#a33a35;
+
+  --m-anna:#1e7a8c;
+  --m-markus:#8a6242;
+  --m-jonas:#4a7c3f;
+  --m-lea:#7b4b94;
+  --m-oma:#c2456b;
+
+  --r-card:10px;
+  --step:1.5rem;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:"Fira Sans","Segoe UI",system-ui,sans-serif;
+  background:var(--surface-deep);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  line-height:1.45;
+}
+
+/* ---------- Review-Rahmen (nur Desktop, nicht Teil der App) ---------- */
+
+.review{
+  max-width:1000px;
+  margin:0 auto;
+  padding:56px 24px 80px;
+  display:grid;
+  grid-template-columns:390px 1fr;
+  gap:56px;
+  align-items:start;
+}
+.review-notes{padding-top:8px;max-width:44ch}
+.review-notes h1{
+  font-size:2rem;font-weight:700;letter-spacing:-.02em;margin:0 0 .35em;
+}
+.review-notes p{margin:0 0 1em;color:var(--ink-soft);font-size:.95rem}
+.review-notes h2{
+  font-size:.95rem;font-weight:600;margin:1.8em 0 .5em;color:var(--ink);
+}
+.review-notes ul{margin:0;padding-left:1.1em;color:var(--ink-soft);font-size:.95rem}
+.review-notes li{margin-bottom:.45em}
+.review-notes code{
+  background:var(--surface);padding:.1em .35em;border-radius:4px;
+  font-size:.88em;font-family:inherit;color:var(--ink);
+}
+
+.frame{
+  width:390px;height:800px;
+  background:var(--surface);
+  border:1px solid #c3c9b8;
+  border-radius:34px;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 18px 50px -28px rgba(36,42,32,.55);
+}
+
+/* ---------- App ---------- */
+
+.app{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  background:var(--surface);
+  overflow:hidden;
+}
+
+/* Kopfzeile */
+.topbar{
+  display:flex;align-items:center;gap:12px;
+  padding:20px 16px 10px;
+}
+.wordmark{
+  font-weight:700;font-size:1.35rem;letter-spacing:-.035em;
+  margin:0;line-height:1;flex:none;
+}
+.people{
+  display:flex;gap:6px;margin-left:auto;
+}
+.person{
+  width:30px;height:30px;border-radius:50%;
+  border:0;padding:0;cursor:pointer;
+  display:grid;place-items:center;
+  font-size:.95rem;line-height:1;
+  color:#fff;
+  box-shadow:0 0 0 0 var(--surface),0 0 0 0 currentColor;
+  transition:box-shadow .14s ease,opacity .14s ease;
+}
+.person:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.people.filtering .person{opacity:.35}
+.people.filtering .person.on{
+  opacity:1;
+  box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--ink);
+}
+
+/* Spaltenwahl */
+.tabs{
+  display:flex;gap:4px;
+  margin:6px 16px 0;
+  background:var(--surface-deep);
+  border-radius:9px;padding:3px;
+}
+.tab{
+  flex:1;border:0;cursor:pointer;background:transparent;
+  font:inherit;font-size:.9rem;font-weight:500;color:var(--ink-soft);
+  padding:7px 4px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:background .14s ease,color .14s ease;
+}
+.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tab .count{
+  font-size:.78rem;font-weight:600;
+  color:var(--ink-faint);
+  min-width:1.15em;
+}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+.tab[aria-selected="true"] .count{color:rgba(255,255,255,.6)}
+
+/* Filterhinweis */
+.filternote{
+  margin:10px 16px 0;
+  font-size:.85rem;color:var(--ink-soft);
+  display:none;align-items:center;gap:8px;
+}
+.filternote.show{display:flex}
+.filternote button{
+  border:0;background:var(--surface-deep);color:var(--ink);
+  font:inherit;font-size:.82rem;
+  padding:2px 9px;border-radius:20px;cursor:pointer;
+}
+.filternote button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Kartenliste */
+.board{
+  flex:1;overflow-y:auto;overscroll-behavior:contain;
+  padding:14px 16px 120px;
+  display:flex;flex-direction:column;gap:9px;
+}
+
+.slot{position:relative}
+.slot .behind{
+  position:absolute;inset:0;
+  border-radius:var(--r-card);
+  display:flex;align-items:center;
+  padding:0 18px;
+  font-size:.88rem;font-weight:600;color:#fff;
+  background:var(--accent);
+  opacity:0;
+}
+.slot .behind.back{justify-content:flex-end;background:var(--ink-soft)}
+
+.card{
+  position:relative;
+  background:var(--paper);
+  border:1px solid var(--rule);
+  border-radius:var(--r-card);
+  overflow:hidden;
+  display:flex;
+  cursor:pointer;
+  text-align:left;
+  width:100%;
+  font:inherit;color:inherit;
+  padding:0;
+  touch-action:pan-y;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.card.settling{transition:transform .18s cubic-bezier(.2,.7,.3,1)}
+.card.leaving{
+  transition:transform .2s ease,opacity .2s ease;
+  opacity:0;
+}
+
+/* Die Kante gehört der Person, nicht der Karte. */
+.edge{
+  flex:none;width:5px;
+  display:flex;flex-direction:column;
+  background:var(--rule);
+}
+.edge span{flex:1}
+
+.body{padding:11px 13px 11px 12px;flex:1;min-width:0}
+.title{
+  font-size:.98rem;font-weight:500;
+  margin:0;
+  overflow-wrap:anywhere;
+}
+.card.done .title{color:var(--ink-soft)}
+.meta{
+  display:flex;align-items:center;gap:8px;
+  margin-top:8px;min-height:22px;
+}
+.meta:empty{display:none}
+.due{
+  font-size:.8rem;color:var(--ink-soft);
+  display:flex;align-items:center;gap:5px;
+}
+.due.soon{color:var(--danger);font-weight:500}
+.due .dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
+.avatars{display:flex;gap:4px;margin-left:auto}
+.av{
+  width:22px;height:22px;border-radius:50%;
+  display:grid;place-items:center;
+  font-size:.72rem;color:#fff;flex:none;
+}
+.nobody{
+  font-size:.8rem;color:var(--ink-faint);margin-left:auto;
+}
+
+/* Leerzustand */
+.empty{
+  padding:44px 8px;text-align:center;color:var(--ink-soft);
+  font-size:.95rem;
+}
+.empty strong{display:block;font-weight:600;color:var(--ink);margin-bottom:4px}
+
+.older{
+  border:0;background:transparent;
+  font:inherit;font-size:.86rem;color:var(--ink-soft);
+  padding:10px 2px;cursor:pointer;text-align:left;
+  text-decoration:underline;text-underline-offset:3px;
+  text-decoration-color:var(--rule);
+}
+.older:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Neue Karte */
+.fab{
+  position:absolute;right:18px;bottom:26px;
+  width:54px;height:54px;border-radius:50%;
+  border:0;cursor:pointer;
+  background:var(--accent);color:var(--accent-ink);
+  font-size:1.7rem;line-height:1;
+  display:grid;place-items:center;
+  box-shadow:0 8px 22px -8px rgba(47,111,94,.85);
+}
+.fab:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+.composer{
+  position:absolute;left:0;right:0;bottom:0;
+  background:var(--paper);
+  border-top:1px solid var(--rule);
+  padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+  display:flex;gap:9px;
+  transform:translateY(110%);
+  transition:transform .2s cubic-bezier(.2,.7,.3,1);
+}
+.composer.open{transform:translateY(0)}
+.composer input{
+  flex:1;min-width:0;
+  font:inherit;font-size:1rem;
+  border:1px solid var(--rule);border-radius:8px;
+  padding:10px 12px;background:var(--surface);color:var(--ink);
+}
+.composer input:focus{outline:2px solid var(--accent);outline-offset:-1px;background:var(--paper)}
+.composer button{
+  border:0;border-radius:8px;cursor:pointer;
+  background:var(--accent);color:var(--accent-ink);
+  font:inherit;font-weight:600;padding:0 16px;
+}
+.composer button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* Detail-Sheet */
+.scrim{
+  position:absolute;inset:0;background:rgba(36,42,32,.4);
+  opacity:0;pointer-events:none;transition:opacity .2s ease;
+}
+.scrim.open{opacity:1;pointer-events:auto}
+
+.sheet{
+  position:absolute;left:0;right:0;bottom:0;
+  background:var(--paper);
+  border-radius:18px 18px 0 0;
+  padding:8px 18px calc(22px + env(safe-area-inset-bottom));
+  transform:translateY(100%);
+  transition:transform .24s cubic-bezier(.2,.7,.3,1);
+  max-height:88%;overflow-y:auto;
+}
+.sheet.open{transform:translateY(0)}
+.grip{
+  width:38px;height:4px;border-radius:2px;background:var(--rule);
+  margin:6px auto 16px;
+}
+.sheet h2{
+  font-size:1.2rem;font-weight:600;margin:0 0 2px;letter-spacing:-.01em;
+}
+.sheet .where{font-size:.85rem;color:var(--ink-soft);margin:0 0 20px}
+
+.field{margin-bottom:20px}
+.field > span{
+  display:block;font-size:.85rem;color:var(--ink-soft);margin-bottom:8px;
+}
+.picker{display:flex;flex-wrap:wrap;gap:8px}
+.pick{
+  display:flex;align-items:center;gap:7px;
+  border:1px solid var(--rule);border-radius:22px;
+  background:var(--paper);cursor:pointer;
+  font:inherit;font-size:.9rem;color:var(--ink);
+  padding:5px 12px 5px 5px;
+  transition:border-color .12s ease,background .12s ease;
+}
+.pick .av{width:24px;height:24px;font-size:.78rem}
+.pick[aria-pressed="true"]{border-color:var(--ink);background:var(--surface)}
+.pick:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.moves{display:flex;gap:8px}
+.move{
+  flex:1;border:1px solid var(--rule);border-radius:8px;
+  background:var(--paper);cursor:pointer;
+  font:inherit;font-size:.92rem;font-weight:500;color:var(--ink);
+  padding:11px 4px;
+  transition:background .12s ease;
+}
+.move[aria-current="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.move:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.sheet textarea{
+  width:100%;font:inherit;font-size:.95rem;
+  border:1px solid var(--rule);border-radius:8px;
+  padding:10px 12px;background:var(--surface);color:var(--ink);
+  resize:none;min-height:74px;
+}
+.sheet textarea:focus{outline:2px solid var(--accent);outline-offset:-1px;background:var(--paper)}
+
+.sheet-foot{
+  display:flex;justify-content:space-between;align-items:center;
+  border-top:1px solid var(--rule);padding-top:14px;
+}
+.linkbtn{
+  border:0;background:transparent;cursor:pointer;
+  font:inherit;font-size:.92rem;color:var(--danger);padding:6px 0;
+}
+.linkbtn.quiet{color:var(--ink-soft)}
+.linkbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Toast */
+.toast{
+  position:absolute;left:16px;right:16px;bottom:96px;
+  background:var(--ink);color:var(--paper);
+  border-radius:9px;padding:11px 14px;
+  font-size:.9rem;
+  display:flex;align-items:center;gap:12px;
+  opacity:0;transform:translateY(6px);
+  transition:opacity .18s ease,transform .18s ease;
+  pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateY(0);pointer-events:auto}
+.toast button{
+  margin-left:auto;border:0;background:transparent;cursor:pointer;
+  font:inherit;font-weight:600;color:#9ed6c4;padding:0;
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+
+/* Auf echten Telefonen: Rahmen weg, App füllt den Bildschirm */
+@media (max-width:900px){
+  body{background:var(--surface)}
+  .review{display:block;padding:0;max-width:none}
+  .review-notes{display:none}
+  .frame{
+    width:100%;height:100dvh;border:0;border-radius:0;box-shadow:none;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="review">
+
+  <div class="frame">
+    <div class="app">
+
+      <div class="topbar">
+        <p class="wordmark">Dran</p>
+        <div class="people" id="people"></div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Spalten">
+        <button class="tab" role="tab" data-list="offen" aria-selected="true">Offen <span class="count"></span></button>
+        <button class="tab" role="tab" data-list="dran" aria-selected="false">Dran <span class="count"></span></button>
+        <button class="tab" role="tab" data-list="fertig" aria-selected="false">Fertig <span class="count"></span></button>
+      </div>
+
+      <p class="filternote" id="filternote">
+        <span id="filtertext"></span>
+        <button id="clearfilter">Alle zeigen</button>
+      </p>
+
+      <div class="board" id="board"></div>
+
+      <button class="fab" id="fab" aria-label="Karte hinzufügen">+</button>
+
+      <div class="composer" id="composer">
+        <input id="newtitle" placeholder="Was ist zu tun?" aria-label="Titel der neuen Karte">
+        <button id="addbtn">Anlegen</button>
+      </div>
+
+      <div class="toast" id="toast"><span id="toasttext"></span><button id="undo">Rückgängig</button></div>
+
+      <div class="scrim" id="scrim"></div>
+      <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheettitle">
+        <div class="grip"></div>
+        <h2 id="sheettitle"></h2>
+        <p class="where" id="sheetwhere"></p>
+
+        <div class="field">
+          <span>Wer macht das?</span>
+          <div class="picker" id="picker"></div>
+        </div>
+
+        <div class="field">
+          <span>Verschieben nach</span>
+          <div class="moves" id="moves"></div>
+        </div>
+
+        <div class="field">
+          <span>Notiz</span>
+          <textarea id="notes" placeholder="Nur wenn es etwas zu sagen gibt."></textarea>
+        </div>
+
+        <div class="sheet-foot">
+          <button class="linkbtn" id="del">Karte löschen</button>
+          <button class="linkbtn quiet" id="close">Fertig</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="review-notes">
+    <h1>Mockup, Stand v1</h1>
+    <p>Klickbare Attrappe mit erfundenen Daten. Kein Backend, nichts wird gespeichert. Auf dem Telefon läuft das Ganze bildschirmfüllend.</p>
+
+    <h2>Was du ausprobieren solltest</h2>
+    <ul>
+      <li><strong>Karte nach rechts wischen</strong> — eine Spalte weiter. Nach links zurück. Das ist die Geste, die im Alltag am häufigsten gebraucht wird, und die auf Touch am ehesten schiefgeht.</li>
+      <li>Vertikal scrollen, während eine Karte halb weggewischt ist. <code>touch-action: pan-y</code> soll dafür sorgen, dass sich beides nicht in die Quere kommt.</li>
+      <li>Avatar oben rechts antippen — filtert quer über alle drei Spalten.</li>
+      <li>Karte antippen für das Detail-Sheet.</li>
+      <li>„+" unten rechts: Titel eintippen, Enter, Feld bleibt offen für die nächste.</li>
+    </ul>
+
+    <h2>Die eine gestalterische Entscheidung</h2>
+    <p>Die Farbe gehört der Person, nicht der Karte. Sie sitzt als durchgehende Kante links an der Karte, damit man eine Spalte scannen kann, ohne zu lesen. Eine graue Kante heißt: das ist noch niemandes Aufgabe — genau die Information, die auf einem Familienbrett zählt.</p>
+
+    <h2>Bewusst weggelassen</h2>
+    <ul>
+      <li>Fälligkeitsdatum ist nur an zwei Karten zu sehen und nicht editierbar — offener Punkt 3 aus der Spec.</li>
+      <li>Kein Wischen zwischen den Spalten. Zwei horizontale Gesten übereinander sind auf Touch nicht sauber zu trennen.</li>
+      <li>Die Desktop-Ansicht mit drei Spalten nebeneinander fehlt hier komplett.</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+const MEMBERS = [
+  {id:'anna',   name:'Anna',   emoji:'🌿', color:'var(--m-anna)'},
+  {id:'markus', name:'Markus', emoji:'🔧', color:'var(--m-markus)'},
+  {id:'jonas',  name:'Jonas',  emoji:'⚽', color:'var(--m-jonas)'},
+  {id:'lea',    name:'Lea',    emoji:'🎧', color:'var(--m-lea)'},
+  {id:'oma',    name:'Oma',    emoji:'🌷', color:'var(--m-oma)'},
+];
+const M = Object.fromEntries(MEMBERS.map(m => [m.id, m]));
+const LISTS = ['offen','dran','fertig'];
+const LABEL = {offen:'Offen', dran:'Dran', fertig:'Fertig'};
+
+let cards = [
+  {id:1, title:'Paket bei Nachbarn abholen', list:'offen', to:['markus'], due:'heute', soon:true, notes:'Nr. 14, klingelt unten links.'},
+  {id:2, title:'Zahnarzttermin für Jonas machen', list:'offen', to:['anna'], notes:''},
+  {id:3, title:'Altglas wegbringen', list:'offen', to:[], notes:''},
+  {id:4, title:'Geschenk für Opa besorgen', list:'offen', to:['anna','lea'], due:'Sa', notes:'Budget 40 €. Er hat sich Kopfhörer gewünscht.'},
+  {id:5, title:'Spülmaschine entkalken', list:'offen', to:[], notes:''},
+  {id:6, title:'Wäsche aufhängen', list:'dran', to:['lea'], notes:''},
+  {id:7, title:'Mathe-Hausaufgaben durchgehen', list:'dran', to:['markus','jonas'], notes:''},
+  {id:8, title:'Einkaufen für Sonntag', list:'fertig', to:['anna'], notes:''},
+  {id:9, title:'Reifen wechseln lassen', list:'fertig', to:['markus'], notes:''},
+];
+let nextId = 10;
+
+let active = 'offen';
+let filter = null;
+let openCard = null;
+let lastMove = null;
+let toastTimer = null;
+
+const $ = s => document.querySelector(s);
+const board = $('#board'), sheet = $('#sheet'), scrim = $('#scrim');
+
+/* ---------- Kopfzeile ---------- */
+
+function renderPeople(){
+  const box = $('#people');
+  box.innerHTML = '';
+  box.classList.toggle('filtering', !!filter);
+  MEMBERS.forEach(m => {
+    const b = document.createElement('button');
+    b.className = 'person' + (filter === m.id ? ' on' : '');
+    b.style.background = m.color;
+    b.textContent = m.emoji;
+    b.setAttribute('aria-label', filter === m.id ? `Filter ${m.name} aufheben` : `Nur Karten von ${m.name}`);
+    b.setAttribute('aria-pressed', filter === m.id);
+    b.onclick = () => { filter = filter === m.id ? null : m.id; renderAll(); };
+    box.appendChild(b);
+  });
+}
+
+function visible(list){
+  return cards.filter(c => c.list === list && (!filter || c.to.includes(filter)));
+}
+
+function renderTabs(){
+  document.querySelectorAll('.tab').forEach(t => {
+    const l = t.dataset.list;
+    t.setAttribute('aria-selected', l === active);
+    t.querySelector('.count').textContent = visible(l).length || '';
+  });
+  const note = $('#filternote');
+  note.classList.toggle('show', !!filter);
+  if (filter) $('#filtertext').textContent = `Nur Karten von ${M[filter].name}`;
+}
+
+/* ---------- Karten ---------- */
+
+function avatar(id){
+  const m = M[id];
+  const el = document.createElement('span');
+  el.className = 'av';
+  el.style.background = m.color;
+  el.textContent = m.emoji;
+  el.title = m.name;
+  return el;
+}
+
+function cardEl(c){
+  const slot = document.createElement('div');
+  slot.className = 'slot';
+
+  const fwd = document.createElement('div');
+  fwd.className = 'behind';
+  fwd.textContent = c.list === 'fertig' ? '' : 'Nach ' + LABEL[LISTS[LISTS.indexOf(c.list)+1]];
+  const back = document.createElement('div');
+  back.className = 'behind back';
+  back.textContent = c.list === 'offen' ? '' : 'Zurück nach ' + LABEL[LISTS[LISTS.indexOf(c.list)-1]];
+  slot.append(fwd, back);
+
+  const el = document.createElement('button');
+  el.className = 'card' + (c.list === 'fertig' ? ' done' : '');
+  el.dataset.id = c.id;
+
+  const edge = document.createElement('div');
+  edge.className = 'edge';
+  c.to.forEach(id => {
+    const s = document.createElement('span');
+    s.style.background = M[id].color;
+    edge.appendChild(s);
+  });
+
+  const body = document.createElement('div');
+  body.className = 'body';
+  const t = document.createElement('p');
+  t.className = 'title';
+  t.textContent = c.title;
+  const meta = document.createElement('div');
+  meta.className = 'meta';
+
+  if (c.due){
+    const d = document.createElement('span');
+    d.className = 'due' + (c.soon ? ' soon' : '');
+    const dot = document.createElement('span'); dot.className = 'dot';
+    d.append(dot, document.createTextNode(c.due));
+    meta.appendChild(d);
+  }
+  if (c.to.length){
+    const av = document.createElement('div');
+    av.className = 'avatars';
+    c.to.forEach(id => av.appendChild(avatar(id)));
+    meta.appendChild(av);
+  } else if (c.list !== 'fertig'){
+    const n = document.createElement('span');
+    n.className = 'nobody';
+    n.textContent = 'niemand';
+    meta.appendChild(n);
+  }
+
+  body.append(t, meta);
+  el.append(edge, body);
+  slot.appendChild(el);
+
+  el.onclick = () => { if (!el.dataset.swiped) openSheet(c.id); };
+  wireSwipe(el, c, fwd, back);
+  return slot;
+}
+
+function renderBoard(){
+  board.innerHTML = '';
+  const list = visible(active);
+
+  if (!list.length){
+    const e = document.createElement('div');
+    e.className = 'empty';
+    const msgs = {
+      offen: ['Nichts offen.', 'Angenehm.'],
+      dran: ['Gerade läuft nichts.', 'Wisch eine Karte aus „Offen" hierher.'],
+      fertig: ['Noch nichts erledigt.', 'Wird schon.'],
+    };
+    const f = filter
+      ? [`Für ${M[filter].name} liegt hier nichts.`, 'Filter aufheben, um alles zu sehen.']
+      : msgs[active];
+    e.innerHTML = `<strong>${f[0]}</strong>${f[1]}`;
+    board.appendChild(e);
+    return;
+  }
+
+  list.forEach(c => board.appendChild(cardEl(c)));
+
+  if (active === 'fertig'){
+    const o = document.createElement('button');
+    o.className = 'older';
+    o.textContent = '37 ältere anzeigen';
+    o.onclick = () => showToast('Ältere Karten liegen im Archiv.', false);
+    board.appendChild(o);
+  }
+}
+
+function renderAll(){ renderPeople(); renderTabs(); renderBoard(); }
+
+/* ---------- Wischen ---------- */
+
+function wireSwipe(el, c, fwd, back){
+  let x0 = 0, y0 = 0, dx = 0, live = false, decided = false;
+  const i = LISTS.indexOf(c.list);
+  const canFwd = i < 2, canBack = i > 0;
+  const TH = 72;
+
+  el.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    x0 = e.clientX; y0 = e.clientY; dx = 0; live = true; decided = false;
+    delete el.dataset.swiped;
+    el.classList.remove('settling');
+  });
+
+  el.addEventListener('pointermove', e => {
+    if (!live) return;
+    const mx = e.clientX - x0, my = e.clientY - y0;
+    if (!decided){
+      if (Math.abs(mx) < 8 && Math.abs(my) < 8) return;
+      if (Math.abs(my) > Math.abs(mx)){ live = false; return; }
+      decided = true;
+      el.setPointerCapture(e.pointerId);
+    }
+    dx = mx;
+    if ((dx > 0 && !canFwd) || (dx < 0 && !canBack)) dx *= .18;
+    el.style.transform = `translateX(${dx}px)`;
+    fwd.style.opacity = dx > 0 ? Math.min(1, dx / TH) : 0;
+    back.style.opacity = dx < 0 ? Math.min(1, -dx / TH) : 0;
+  });
+
+  const end = () => {
+    if (!live) return;
+    live = false;
+    el.classList.add('settling');
+    fwd.style.opacity = 0; back.style.opacity = 0;
+
+    if (dx > TH && canFwd){ el.dataset.swiped = 1; fly(el, c, 1); return; }
+    if (dx < -TH && canBack){ el.dataset.swiped = 1; fly(el, c, -1); return; }
+    el.style.transform = '';
+    if (decided) el.dataset.swiped = 1;
+    setTimeout(() => delete el.dataset.swiped, 60);
+  };
+  el.addEventListener('pointerup', end);
+  el.addEventListener('pointercancel', end);
+}
+
+function fly(el, c, dir){
+  el.classList.add('leaving');
+  el.style.transform = `translateX(${dir * 340}px)`;
+  const from = c.list;
+  setTimeout(() => {
+    c.list = LISTS[LISTS.indexOf(c.list) + dir];
+    lastMove = {id:c.id, from};
+    renderAll();
+    showToast(`„${short(c.title)}" → ${LABEL[c.list]}`, true);
+  }, 170);
+}
+
+const short = s => s.length > 26 ? s.slice(0,25).trimEnd() + '…' : s;
+
+/* ---------- Toast ---------- */
+
+function showToast(text, undoable){
+  $('#toasttext').textContent = text;
+  $('#undo').style.display = undoable ? '' : 'none';
+  $('#toast').classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $('#toast').classList.remove('show'), 3800);
+}
+$('#undo').onclick = () => {
+  if (!lastMove) return;
+  const c = cards.find(x => x.id === lastMove.id);
+  if (c) c.list = lastMove.from;
+  lastMove = null;
+  $('#toast').classList.remove('show');
+  renderAll();
+};
+
+/* ---------- Detail-Sheet ---------- */
+
+function openSheet(id){
+  openCard = cards.find(c => c.id === id);
+  $('#sheettitle').textContent = openCard.title;
+  $('#sheetwhere').textContent = 'Liegt in ' + LABEL[openCard.list];
+  $('#notes').value = openCard.notes || '';
+  renderPicker(); renderMoves();
+  sheet.classList.add('open'); scrim.classList.add('open');
+}
+function closeSheet(){
+  if (openCard) openCard.notes = $('#notes').value;
+  sheet.classList.remove('open'); scrim.classList.remove('open');
+  openCard = null; renderAll();
+}
+
+function renderPicker(){
+  const p = $('#picker'); p.innerHTML = '';
+  MEMBERS.forEach(m => {
+    const b = document.createElement('button');
+    b.className = 'pick';
+    b.setAttribute('aria-pressed', openCard.to.includes(m.id));
+    b.append(avatar(m.id), document.createTextNode(m.name));
+    b.onclick = () => {
+      const at = openCard.to.indexOf(m.id);
+      at === -1 ? openCard.to.push(m.id) : openCard.to.splice(at, 1);
+      renderPicker();
+    };
+    p.appendChild(b);
+  });
+}
+
+function renderMoves(){
+  const box = $('#moves'); box.innerHTML = '';
+  LISTS.forEach(l => {
+    const b = document.createElement('button');
+    b.className = 'move';
+    b.textContent = LABEL[l];
+    b.setAttribute('aria-current', openCard.list === l);
+    b.onclick = () => {
+      openCard.list = l;
+      $('#sheetwhere').textContent = 'Liegt in ' + LABEL[l];
+      active = l;
+      renderMoves(); renderAll();
+    };
+    box.appendChild(b);
+  });
+}
+
+$('#close').onclick = closeSheet;
+scrim.onclick = closeSheet;
+$('#del').onclick = () => {
+  cards = cards.filter(c => c.id !== openCard.id);
+  const t = openCard.title; openCard = null;
+  sheet.classList.remove('open'); scrim.classList.remove('open');
+  renderAll(); showToast(`„${short(t)}" gelöscht`, false);
+};
+
+/* ---------- Neue Karte ---------- */
+
+const composer = $('#composer'), input = $('#newtitle');
+$('#fab').onclick = () => { composer.classList.add('open'); input.focus(); };
+function add(){
+  const v = input.value.trim();
+  if (!v) { composer.classList.remove('open'); return; }
+  cards.unshift({id:nextId++, title:v, list:active, to:[], notes:''});
+  input.value = ''; renderAll(); input.focus();
+}
+$('#addbtn').onclick = add;
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter') add();
+  if (e.key === 'Escape'){ composer.classList.remove('open'); input.value = ''; }
+});
+input.addEventListener('blur', () => {
+  setTimeout(() => { if (document.activeElement !== $('#addbtn')) composer.classList.remove('open'); }, 120);
+});
+
+/* ---------- Sonstiges ---------- */
+
+document.querySelectorAll('.tab').forEach(t => {
+  t.onclick = () => { active = t.dataset.list; renderAll(); };
+});
+$('#clearfilter').onclick = () => { filter = null; renderAll(); };
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && openCard) closeSheet();
+});
+
+renderAll();
+</script>
+</body>
+</html>
