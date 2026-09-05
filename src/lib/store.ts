@@ -168,11 +168,11 @@ export class BoardStore {
       id: newRecordId(),
       title: cleanTitle,
       notes: '',
-      list: state.selectedList,
-      pos: positionAtTop(state.cards, state.selectedList),
+      list: 'offen',
+      pos: positionAtTop(state.cards, 'offen'),
       assignees: [],
       due: '',
-      doneAt: state.selectedList === 'fertig' ? new Date().toISOString() : '',
+      doneAt: '',
       archived: false
     };
     void this.enqueue('create', card.id, card);
