@@ -3,13 +3,19 @@
   import Board from './components/Board.svelte';
   import Login from './components/Login.svelte';
   import { boardStore } from './lib/store';
-  import { isAuthenticated } from './lib/pb';
+  import { isAuthenticated, pb } from './lib/pb';
 
   let authenticated = isAuthenticated();
 
   onMount(() => {
+    const unsubscribeAuth = pb.authStore.onChange(() => {
+      authenticated = isAuthenticated();
+    });
     void boardStore.init();
-    return () => boardStore.destroy();
+    return () => {
+      unsubscribeAuth();
+      boardStore.destroy();
+    };
   });
 
   async function loggedIn() {

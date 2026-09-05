@@ -71,6 +71,10 @@ function isNetworkFailure(error: unknown): boolean {
   return error.status === 0 || error.status >= 500;
 }
 
+function isAuthenticationFailure(error: unknown): boolean {
+  return error instanceof ClientResponseError && error.status === 401;
+}
+
 export function applyOperations(baseCards: Iterable<Card>, operations: QueuedOperation[]): Card[] {
   const cards = new Map(Array.from(baseCards, (card) => [card.id, card]));
   for (const operation of operations) {
@@ -142,6 +146,7 @@ export class BoardStore {
       await this.subscribeRealtime();
       ready = true;
     } catch (error) {
+      if (isAuthenticationFailure(error)) pb.authStore.clear();
       this.patchState({ online: navigator.onLine, connected: false, loading: false, readOnly: !isAuthenticated() });
       if (!isNetworkFailure(error)) this.showToast('Board konnte nicht geladen werden.');
     } finally {
@@ -329,6 +334,12 @@ export class BoardStore {
           }
           await this.finishOperation(operation.opId);
         } catch (error) {
+          if (isAuthenticationFailure(error)) {
+            pb.authStore.clear();
+            this.patchState({ connected: false, readOnly: true });
+            this.showToast('Sitzung abgelaufen. Bitte erneut anmelden.');
+            break;
+          }
           if (operation.kind === 'create' && error instanceof ClientResponseError && error.status === 400) {
             try {
               const existing = normalizeCard(await pb.collection('cards').getOne(operation.cardId));
